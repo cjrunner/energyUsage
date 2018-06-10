@@ -48,6 +48,7 @@
 
 #ifndef __ALIGN__
 #define __ALIGN__
+
 #define ASSUMEDBUFFERSIZE 80
 #define FILLCHARACTER ' '
 #include <cstring>
@@ -79,8 +80,9 @@ private:
 public:
     int  rc;
     char *workBufferToBeReturnedToCaller;
-    Align(int, const char * );
+    Align(int);
     ~Align();   //Destructor used to free dynamically acquired storage used by this class's member functions.
+void    alignSetup(const char *);
 char *alignLeft(int, char *, int=ASSUMEDBUFFERSIZE);
 char *alignCenter(int,   char *,  int=ASSUMEDBUFFERSIZE);
 char *alignRight(int, char *, char, int=ASSUMEDBUFFERSIZE);

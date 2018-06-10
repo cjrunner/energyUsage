@@ -27,8 +27,8 @@
 #include <gsl/gsl_statistics.h>
 #include "baseClass.hpp" //Need this to resolve the inherited MakeConnectionString class.
 
-enum bucketColNames  {_avgtemp, _avgeu, _stddeveu, _mineu, _maxeu, _countu};
-class SetupForMultiFit : BaseClass { 
+// ¿enum bucketColNames is already defined in BaseClass, so why define it again? enum bucketColNames  {_avgtemp, _avgeu, _stddeveu, _mineu, _maxeu, _countu};
+class SetupForMultiFit  {  //SetupForMultiFit inherits from BaseClass
 private:
     size_t polynomialDegree; //From constructor parameter;
     size_t numberOfEntries;  // From count
@@ -36,9 +36,9 @@ private:
     size_t &maxNumberOfRows = numberOfEntries;  // Use a c++-type reference rather than a C-type pointer.
     
 public:
-    
-    size_t  onePlusPolynomialDegree;
-    const double initialValue = 1;
+    BaseClass *bc;
+    size_t onePlusPolynomialDegree;
+    const  double initialValue = 1;
     double dblwork;
     double computedValue;
     double chiSquared;
@@ -61,7 +61,7 @@ public:
     int rc;
     //Declaration of various member functions
     ~SetupForMultiFit();
-    SetupForMultiFit(size_t,  size_t, double *);
+    SetupForMultiFit(BaseClass *, size_t,  size_t, double *)  ;
     int doMultiFit(void) ;
     
     void  setIntoMatrix(gsl_matrix *, int, int, double);
@@ -72,9 +72,9 @@ public:
     
     double  getFromVector(gsl_vector *, int); 
     
-    int  outputPolynomial(const char *);
+    int  outputPolynomial(const char *, const char *);
     
-    double  outputCovarianceMatrix(const char *);
+    double  outputCovarianceMatrix(const char *, const char *);
     
     void captureIndependentVariableValues( int, double []);  //☞Note  that the `[]` is necessary in this declaration
     
