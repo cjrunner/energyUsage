@@ -13,5 +13,6 @@
 #include <iostream>
 #include "/usr/local/pgsql/pgsql101/include/libpq-fe.h"
 #include "myPrototypes.hpp"
+#include "baseClass.hpp"
 static inline void rtrim(std::string &s);
 #endif /* updateTable_hpp */

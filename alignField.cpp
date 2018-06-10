@@ -83,7 +83,7 @@ char *Align::alignCenter(int columnNumber,  char *data,  int assumedBufferSize) 
     
     return this->originalBufferLocation;
 }      
-Align::Align( int assumedBufferSize, const char *headerRowSpacerPattern ) {
+Align::Align( int assumedBufferSize) {
     
     this->originalBufferLocation = new char[assumedBufferSize];
     //    this->leftPaddingBuffer = new char[assumedBufferSize/2];
@@ -92,13 +92,15 @@ Align::Align( int assumedBufferSize, const char *headerRowSpacerPattern ) {
     this->fill = FILLCHARACTER;
     this->loopCounter=0;
     this->numberOfFields = 0;
+}
+void Align::alignSetup( const char *headerRowSpacerPattern) {
 //Create an array of field widths based upon the string provided by the caller.
 // String looks like:
 //----------------+-------------+------------+----------------+-------------+----------------+------------+------+------- +------- +---------+------- +- ------+---------+---------------
 //With the `+` signs are the places where the field to the left of the `+` ends and the field to the right of the `+` sign begins.
 //We call the above string the headerRowSpacerPattern.
 //Doing the code, below, saves us the tedius, and error prone, procedure of manually counting the number of characters between fields.
-    while( *(headerRowSpacerPattern + this->loopCounter) ) {
+    while( *(headerRowSpacerPattern + this->loopCounter)   ) {
         this->testPattern = *(headerRowSpacerPattern + this->loopCounter);
         if (*(headerRowSpacerPattern + this->loopCounter) == '+') {
             this->numberOfFields++;

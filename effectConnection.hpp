@@ -38,7 +38,7 @@ extern "C"
 #define NUMBEROFITERATIONS       1500
 #define SEPERATORCHARACTER       ':'
 
-class EffectConnection : public BaseClass {
+class EffectConnection  {
 //typedef struct {
 private:
     FILE *PGPASS;
@@ -62,6 +62,7 @@ private:
     struct timespec start;
     struct timespec stop;
 public:
+    char *startOfStringSegment;
     const char *cs; //points to Resulting constring
     PGconn *connectionObject;
 //    int makeConnectionString( void );

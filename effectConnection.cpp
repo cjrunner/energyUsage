@@ -1,4 +1,4 @@
-#include "baseClass.hpp"
+// #include "baseClass.hpp"
 #include "effectConnection.hpp"
 
 extern "C"
@@ -21,76 +21,76 @@ const char * EffectConnection::findDesiredRecord(char *theBuffer, \
                                                  char *theUserID, \
                                                  size_t lenUserID) {
     //Need to use strncmp because we don't have null-terminated strings, instead we have colon-terminated strings; strcmp only works with null-terminated strings.
-    char *workbuf;
-    char *startOfStringSegment;
-    workbuf = theBuffer;  //Make a copy of the start of the input buffer. This will be our working pointer.
-    startOfStringSegment = theBuffer;
+
+
+    this->workbuf = theBuffer;  //Make a copy of the start of the input buffer. This will be our working pointer.
+    this->startOfStringSegment = theBuffer;
 //search for the first separator character that separates the hostid from the port id.
-    while (theBuffer + SUBBUFSIZE - workbuf >0 && *workbuf != '\0') {
-        if (*workbuf == separator) {  //Oh, by the way, did we encounter a separator character as we traversed this buffer ?
-            this->arrayOfPointersToSeparatorCharacter[STARTOFHOSTID] = workbuf;  // If so, save its location in our array of pointers to string; //This marks the end of the first string segment.
-            *workbuf = '\0'; //Set this first encountered separator character to NULL.
-            if(strcmp(startOfStringSegment, theHost) != 0) {
+    while (theBuffer + SUBBUFSIZE - this->workbuf >0 && *this->workbuf != '\0') {
+        if (*this->workbuf == separator) {  //Oh, by the way, did we encounter a separator character as we traversed this buffer ?
+            this->arrayOfPointersToSeparatorCharacter[STARTOFHOSTID] = this->workbuf;  // If so, save its location in our array of pointers to string; //This marks the end of the first string segment.
+            *this->workbuf = '\0'; //Set this first encountered separator character to NULL.
+            if(strcmp(this->startOfStringSegment, theHost) != 0) {
                 return(NULL);  //Return with indication that we failed to match the hostid.
             } else {
-                workbuf++;
-                startOfStringSegment = workbuf; //Have the buffer now point 1 character past what was the separator character, thus what is now the start of the second string segment: the database's name.
+                this->workbuf++;
+                this->startOfStringSegment = this->workbuf; //Have the buffer now point 1 character past what was the separator character, thus what is now the start of the second string segment: the database's name.
                 break; //Exit while loop
             }
         } else {
-            workbuf++; //Go to this segment's next character
+            this->workbuf++; //Go to this segment's next character
         }
     }
 //search for the second separator character that separates the port id from the database's name.
-    while (theBuffer + SUBBUFSIZE - workbuf >0 && *workbuf != '\0') {
-        if (*workbuf == separator) {  //Oh, by the way, did we encounter a separator character as we traversed this buffer ?
-            this->arrayOfPointersToSeparatorCharacter[BETWEENHOSTANDPORT] = workbuf;  // If so, save its location in our array of pointers to string;
-            *workbuf = '\0'; //Set this second-encountered separator character to NULL.
-            if(strcmp(startOfStringSegment, thePort) != 0 ) {
+    while (theBuffer + SUBBUFSIZE - this->workbuf >0 && *this->workbuf != '\0') {
+        if (*this->workbuf == separator) {  //Oh, by the way, did we encounter a separator character as we traversed this buffer ?
+            this->arrayOfPointersToSeparatorCharacter[BETWEENHOSTANDPORT] = this->workbuf;  // If so, save its location in our array of pointers to string;
+            *this->workbuf = '\0'; //Set this second-encountered separator character to NULL.
+            if(strcmp(this->startOfStringSegment, thePort) != 0 ) {
                 return(NULL);
             } else {
                 workbuf++;
-                startOfStringSegment = workbuf; //Have the buffer now point 1 character past what was the separator character, thus what is now the start of the second string segment: the port id.
+                this->startOfStringSegment = this->workbuf; //Have the buffer now point 1 character past what was the separator character, thus what is now the start of the second string segment: the port id.
                 break; //Exit while loop
             }
         } else {
-            workbuf++; //Go to this segment's next character
+            this->workbuf++; //Go to this segment's next character
         }
     }
 //Search for the third separator charater that separates the datebase's name from the user id.
     if (*workbuf == '\0') return (NULL);
-    while (theBuffer + SUBBUFSIZE - workbuf >0  && *workbuf != '\0') {
-        if (*workbuf == separator) {  //Oh, by the way, did we encounter a separator character as we traversed this buffer ?
-            this->arrayOfPointersToSeparatorCharacter[BETWEENPORTANDDATABASE] = workbuf;  // If so, save its location  in our array of pointers to string;
-            *workbuf = '\0';
-            if(strcmp(startOfStringSegment, theDatabase) != 0) {
+    while (theBuffer + SUBBUFSIZE - this->workbuf >0  && *this->workbuf != '\0') {
+        if (*this->workbuf == separator) {  //Oh, by the way, did we encounter a separator character as we traversed this buffer ?
+            this->arrayOfPointersToSeparatorCharacter[BETWEENPORTANDDATABASE] = this->workbuf;  // If so, save its location  in our array of pointers to string;
+            *this->workbuf = '\0';
+            if(strcmp(this->startOfStringSegment, theDatabase) != 0) {
                 return(NULL);
             } else {
-                workbuf++;
-                startOfStringSegment = workbuf; //Have the buffer now point 1 character past what was the separator character, thus what is now the start of the third string segment: the database user id.
+                this->workbuf++;
+                this->startOfStringSegment = this->workbuf; //Have the buffer now point 1 character past what was the separator character, thus what is now the start of the third string segment: the database user id.
                 break; //Exit while loop
             }
         } else {
-            workbuf++; //Go to this segment's next character
+            this->workbuf++; //Go to this segment's next character
         }
     }
 //search for the fourth separator character that separates the database user id from the password.
-    if (*workbuf == '\0') return (NULL);
-    while (theBuffer + SUBBUFSIZE - workbuf >0  && *workbuf != '\0') {
-        if (*workbuf == separator) {  //Oh, by the way, did we come accross a separator character as we traversed this buffer ?
-            this->arrayOfPointersToSeparatorCharacter[BETWEENDATABASEANDUSERID] = workbuf;  // If so, save its location in our array of pointers to string;
-            *workbuf = '\0';
-            if(strcmp(startOfStringSegment, theUserID) != 0) {
+    if (*this->workbuf == '\0') return (NULL);
+    while (theBuffer + SUBBUFSIZE - workbuf >0  && *this->workbuf != '\0') {
+        if (*this->workbuf == separator) {  //Oh, by the way, did we come accross a separator character as we traversed this buffer ?
+            this->arrayOfPointersToSeparatorCharacter[BETWEENDATABASEANDUSERID] = this->workbuf;  // If so, save its location in our array of pointers to string;
+            *this->workbuf = '\0';
+            if(strcmp(this->startOfStringSegment, theUserID) != 0) {
                 return(NULL);
             } else {
-                workbuf++; //Go past the separator character and we should be pointing to the password, which we don't have foreknowledge of what it is.
+                this->workbuf++; //Go past the separator character and we should be pointing to the password, which we don't have foreknowledge of what it is.
                 break;
             }
         } else {
-            workbuf++; //Go to this segment's next character
+            this->workbuf++; //Go to this segment's next character
         }
     }
-    return(workbuf); //Return to caller with a pointer to the password.
+    return(this->workbuf); //Return to caller with a pointer to the password.
 }
 
 char *readLine(char *inputBuffer, int maxBufferSize, int *rec, FILE *fp) {
@@ -113,7 +113,7 @@ char *scanForSeparator(char *buf, char *sep, unsigned long bufsize) {
 }
 EffectConnection::~EffectConnection() {
     //Check to see if PGPASS was already closed before trying to cloase it.
-    if(!this->PGPASS) {
+    if(this->PGPASS != nullptr) {
         fclose(this->PGPASS);
         this->pw = NULL;
     }
@@ -182,5 +182,5 @@ EffectConnection::EffectConnection(char *cs, const char *host, const char *user,
     //At this point i->mainbuf contains what looks like the connection string. However, we will now construct the connect string piece-by-piece.
     //    delete i;  //Let's see if the destructor gets called.
     strncpy(cs, this->connstring, (strlen(this->connstring)-1)); //The '-1' is there to prevent copying over the '\n' character that immediately follows the password's rightmost character.
-// ¿HOW can the derived class set the value in a base class?    : BaseClass () {lookAtMyConnectionString = this->connstring;} //Initialize BaseClass's pointer to the connection string.
+
 }

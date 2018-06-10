@@ -9,15 +9,16 @@
 #include <cstring>
 #include "myPrototypes.hpp"
 #include "/usr/local/pgsql/pgsql101/include/libpq-fe.h"
+#include "baseClass.hpp"
 extern const char *dropTable;
-int dropTheTable(const char *sqlDropTable, PGconn *conn) {
-    PGresult *res;
-    int rc=WONDERFUL;
+int dropTheTable(BaseClass *ptrbc, const char *sqlDropTable) {
+
+    ptrbc->rc[DROPTHETABLE]=WONDERFUL;
     try {
-        res = PQexec(conn, sqlDropTable);
-        PQclear(res);
+        ptrbc->res = PQexec(ptrbc->conn, sqlDropTable);
+        PQclear(ptrbc->res);
     } catch (const std::exception &e) {
-        rc = DROPTABLEFAILED;
+        ptrbc->rc[DROPTHETABLE] = DROPTABLEFAILED;
     }
-    return rc;
+    return ptrbc->rc[DROPTHETABLE];
 } //Used to drop a table if it exists
