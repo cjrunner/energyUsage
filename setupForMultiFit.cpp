@@ -7,7 +7,12 @@
 //
 
 #include <stdio.h>
+#include <iostream>
+#include <sstream>
 #include "setupForMultiFit.hpp"
+#include "myPrototypes.hpp"
+#include "baseClass.hpp"
+const std::string currentDateTime(BaseClass *);
 SetupForMultiFit::~SetupForMultiFit() {  //Destructor
     gsl_matrix_free(this->independentVariable);
     gsl_matrix_free(this->covarienceMatrix);
@@ -19,7 +24,8 @@ SetupForMultiFit::~SetupForMultiFit() {  //Destructor
     gsl_vector_free(this->computedDependetVariable);
     
 }
-SetupForMultiFit::SetupForMultiFit(size_t polynomialDegree,  size_t count, double *aOV) { //Constructor
+SetupForMultiFit::SetupForMultiFit(BaseClass *bC, size_t polynomialDegree,  size_t count, double *aOV)   { //Constructor
+    this->bc = bC;
     this->ptrChiSquared = &chiSquared;
     this->arrayOfValues = aOV;
     this->polynomialDegree = polynomialDegree;
@@ -60,29 +66,29 @@ double  SetupForMultiFit::getFromMatrix(gsl_matrix *whichMatrix, int row, int co
 double  SetupForMultiFit::getFromVector(gsl_vector *whichVector, int row) { 
     return ( gsl_vector_get(whichVector, row) );
 }
-int  SetupForMultiFit::outputPolynomial(const char *leadOffString) {
-    std::cout << leadOffString;
+int  SetupForMultiFit::outputPolynomial(const char *leadOffString, const char *trailingString) {
+    *this->bc->outstring << currentDateTime(this->bc) << "\t" << leadOffString;
     for (int coeff = 0; coeff < this->coefficients->size ; coeff++) {
         if (coeff > 0) {
-            std::cout << " + " << gsl_vector_get(this->coefficients, coeff) << "*T^" << coeff;
+            *this->bc->outstring << " + " << gsl_vector_get(this->coefficients, coeff) << "*T^" << coeff;
         } else {
-            std::cout << gsl_vector_get(this->coefficients, coeff) ;
+            *this->bc->outstring << gsl_vector_get(this->coefficients, coeff) ;
         }
     }
-    std::cout << std::endl;
+    *this->bc->outstring << trailingString << "\n";
     return 0;
 }
-double  SetupForMultiFit::outputCovarianceMatrix(const char *leadOffString) {
+double  SetupForMultiFit::outputCovarianceMatrix(const char *leadOffString, const char *trailingString) {
     // unused    double firstC = *this->ptrChiSquared;
     for (int row = 0; row < this->covarienceMatrix->size1; row++) {
-        std::cout << leadOffString;
+        *this->bc->outstring << currentDateTime(this->bc) << "\t" << leadOffString;
         for (int col = 0; col < this->covarienceMatrix->size2; col++) {
-            std::cout  << *(this->covarienceMatrix->data + this->covarienceMatrix->size1*row + col);
+            *this->bc->outstring  << *(this->covarienceMatrix->data + this->covarienceMatrix->size1*row + col);
             if (col < this->covarienceMatrix->size1 - 1) {
-                std::cout << ", "; //Output a comma to separate covarient values
+                *this->bc->outstring << ", "; //Output a comma to separate covarient values
             } else {
                 //Output closed brackets if we've just output the rightmost covarient value for this row.
-                std::cout << "]" << std::endl;
+                *this->bc->outstring << "]\t " << trailingString << "\n";
             }
         }  //End of inner for loop (col)
     } // End of outter for loop (row)
@@ -147,8 +153,9 @@ double SetupForMultiFit::computeTrace(double *someMatrix, int onePlusPolynomialD
 }
 void  SetupForMultiFit::captureIndependentVariableValues( int theRow, double  valueArray[]) {    
     this->dblwork = *(valueArray +  _stddeveu);
-    if(this->SetupForMultiFit::BaseClass::debugFlags.debug2)
-        std::cout << "weights, or *(valueArray +  _stddeveu), Looks like: " << *(valueArray +  _stddeveu) << std::endl;
+    if (this->bc->debugFlags.debug2) {
+        std::cout << theRow << ". Weights, or *(valueArray +  _stddeveu), Looks like: " << *(valueArray +  _stddeveu) << std::endl;
+    }
     gsl_vector_set(this->weights, theRow, this->dblwork);
     this->dblwork = *(valueArray +  _avgeu);
     gsl_vector_set(this->dependentVariable, theRow, this->dblwork );

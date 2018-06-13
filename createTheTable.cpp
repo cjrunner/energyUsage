@@ -11,16 +11,17 @@
 #include <cstring>
 #include "/usr/local/pgsql/pgsql101/include/libpq-fe.h"
 #include "myPrototypes.hpp"
+#include "baseClass.hpp"
 extern const char *createTable;
-extern const char *createTempTable;
-int createTheTable(const char *sqlCreateTable, PGconn *conn) {
-    int rc=WONDERFUL;
-    PGresult *res;
+
+int createTheTable( BaseClass *, const char *, bool=true) ;
+int createTheTable( BaseClass *ptrbc, const char *sqlCreateTable, bool doPQclear) {
+    ptrbc->rc[CREATETHETABLE]=WONDERFUL;
     try {
-        res = PQexec(conn, sqlCreateTable);
-        PQclear(res);
+        ptrbc->res = PQexec(ptrbc->conn, sqlCreateTable);
+        if(doPQclear) PQclear(ptrbc->res);
     } catch (const std::exception &e) {
-        rc = CREATETABLEFAILED;
+        ptrbc->rc[CREATETHETABLE] = CREATETABLEFAILED;
     }
-    return rc;
+    return ptrbc->rc[CREATETHETABLE];
 } //Used to drop a table if it exists with the second parameter pointing to the SQL

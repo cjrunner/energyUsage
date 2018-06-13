@@ -10,16 +10,17 @@
 #include "/usr/local/pgsql/pgsql101/include/libpq-fe.h"
 #include "myPrototypes.hpp"
 #include <iostream>
+#include "baseClass.hpp"
 #define CLOSEPORTALTRANSACTIONFAILED 5
-int closePortal(PGconn *, BaseClass *, const char *);
-int closePortal(PGconn *conn, BaseClass *ptrbc, const char *sql, bool doPQclear)  {
-    int rc=WONDERFUL;
-    ptrbc->res = PQexec(conn,  sql);
+int closePortal( BaseClass *, const char *);
+int closePortal(BaseClass *ptrbc, const char *sql, bool doPQclear)  {
+    ptrbc->rc[CLOSEPORTAL]=WONDERFUL;
+    ptrbc->res = PQexec(ptrbc->conn,  sql);
     if (PQresultStatus(ptrbc->res) != PGRES_COMMAND_OK) {
         std::cout << __FILE__ << "Line " << __LINE__ << "\tFailed to execute the SQL statement: " << sql << ". Error cause:\n" <<
-        PQerrorMessage(conn) << std::endl;
-        rc = CLOSEPORTALTRANSACTIONFAILED;
+        PQerrorMessage(ptrbc->conn) << std::endl;
+        ptrbc->rc[CLOSEPORTAL] = CLOSEPORTALTRANSACTIONFAILED;
     }
     if (doPQclear) PQclear(ptrbc->res); //Per prototype definition of function closePortal, doPQclear defaults to true.
-    return rc;
+    return ptrbc->rc[CLOSEPORTAL];
 }
